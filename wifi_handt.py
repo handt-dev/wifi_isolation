@@ -39,7 +39,7 @@ def ssh_to_pc(ssh,Host,Port,User,Pass):
 
 
 
-def connect_to_ssid(ssid):
+def connect_to_ssid(ssh,ssid):
 	subnet = "192.168.1."
 	print("\nConnecting to SSID name {}...".format(ssid))
 	stdin, stdout, stderr = ssh.exec_command("netsh wlan connect name={} ssid={}".format(ssid,ssid))
@@ -66,7 +66,7 @@ def connect_to_ssid(ssid):
 		print("=== Get IP address DHCP successful ===")
 	return 0
 
-def ping():
+def ping(ssh):
 	print("Start to ping SSID...")
 	stdin, stdout, stderr = ssh.exec_command("ping 192.168.1.7")
 	result = stdout.readlines()
@@ -104,17 +104,17 @@ if __name__ == '__main__':
 	ssh_to_pc(ssh_1, Host_1, Port_1, User_1, Pass_1)
 	ssh_to_pc(ssh_2, Host_2, Port_2, User_2, Pass_2)
 	for ssid in ssid_list:
-		ret = connect_to_ssid(ssid)
+		ret = connect_to_ssid(ssh_2, ssid)
 		if ret == -1:
 			stdin, stdout, stderr = ssh_2.exec_command('netsh interface ip show addresses Wi-Fi | find "IP Address"')
 			sys.exit()
 		
 		for ssid in ssid_list:
-			ret = connect_to_ssid(ssid)
+			ret = connect_to_ssid(ssh_1, ssid)
 			if ret == -1:
 				stdin, stdout, stderr = ssh_1.exec_command('netsh interface ip show addresses Wi-Fi | find "IP Address"')
 				sys.exit()
-			ping()
+			ping(ssh_1)
 		#ssh.close()
 
 		#ping_result.clear()
