@@ -6,19 +6,21 @@ import sys
 import csv
 from pandas import DataFrame
 
-ssh = paramiko.SSHClient()
-ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh_1 = paramiko.SSHClient()
+ssh_1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh_2 = paramiko.SSHClient()
+ssh_2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 ssid_list ="SSID.txt"
 #==========#
-Host = "10.72.69.69"
-Port = "22"
-User = "handt"
-Pass = "Dzs1234@"
+Host_1 = "10.72.69.69"
+Port_1 = "22"
+User_1 = "handt"
+Pass_1 = "Dzs1234@"
 #==========#
-Host2 = "10.72.71.71"
-Port2 = "22"
-User2 = "daibq"
-Pass2 = "Dzs1234@"
+Host_2 = "10.72.71.71"
+Port_2 = "22"
+User_2 = "daibq"
+Pass_2 = "Dzs1234@"
 ping_result = []
 
 with open(ssid_list, 'r') as f:
@@ -28,17 +30,14 @@ with open(ssid_list, 'r') as f:
 	ssid_list = ssid_list.split('\n')
 	ssid_list = ssid_list[0:-1]
 	print("List of SSID: ",ssid_list)
-def ssh_to_pc1(Host,Port,User,Pass):
+
+def ssh_to_pc(ssh,Host,Port,User,Pass):
 	print("Connecting to PC1...")
 	ssh.connect(Host, Port, User, Pass, timeout = 2)
 	print("=== Connected success ===")
 	stdin, stdout, stderr = ssh.exec_command("")
 
-def ssh_to_pc2(Host2,Port2,User2,Pass2):
-	print("Connecting to PC2...")
-	ssh.connect(Host2, Port2, User2, Pass2, timeout = 2)
-	print("=== Connected success ===")
-	stdin, stdout, stderr = ssh.exec_command("")
+
 
 def connect_to_ssid(ssid):
 	subnet = "192.168.1."
@@ -102,17 +101,18 @@ def update_result():
 	df.to_excel('result.xlsx')
 '''
 if __name__ == '__main__':
-	ssh_to_pc2(Host2,Port2,User2,Pass2)
+	ssh_to_pc(ssh_1, Host_1, Port_1, User_1, Pass_1)
+	ssh_to_pc(ssh_2, Host_2, Port_2, User_2, Pass_2)
 	for ssid in ssid_list:
 		ret = connect_to_ssid(ssid)
 		if ret == -1:
-			stdin, stdout, stderr = ssh.exec_command('netsh interface ip show addresses Wi-Fi | find "IP Address"')
+			stdin, stdout, stderr = ssh_2.exec_command('netsh interface ip show addresses Wi-Fi | find "IP Address"')
 			sys.exit()
-		ssh_to_pc1(Host,Port,User,Pass)
+		
 		for ssid in ssid_list:
 			ret = connect_to_ssid(ssid)
 			if ret == -1:
-				stdin, stdout, stderr = ssh.exec_command('netsh interface ip show addresses Wi-Fi | find "IP Address"')
+				stdin, stdout, stderr = ssh_1.exec_command('netsh interface ip show addresses Wi-Fi | find "IP Address"')
 				sys.exit()
 			ping()
 		#ssh.close()
