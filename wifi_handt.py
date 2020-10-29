@@ -10,6 +10,7 @@ ssh_1 = paramiko.SSHClient()
 ssh_1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 ssh_2 = paramiko.SSHClient()
 ssh_2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#==========#
 ssid_list ="SSID.txt"
 #==========#
 Host_1 = "10.72.69.69"
@@ -30,14 +31,13 @@ with open(ssid_list, 'r') as f:
 	ssid_list = ssid_list.split('\n')
 	ssid_list = ssid_list[0:-1]
 	print("List of SSID: ",ssid_list)
+	number_of_ssid = len(ssid_list)
 
 def ssh_to_pc(ssh,Host,Port,User,Pass):
-	print("Connecting to PC1...")
+	print("Connecting to {}...".format(Host))
 	ssh.connect(Host, Port, User, Pass, timeout = 2)
 	print("=== Connected success ===")
 	stdin, stdout, stderr = ssh.exec_command("")
-
-
 
 def connect_to_ssid(ssh,ssid):
 	subnet = "192.168.1."
@@ -81,25 +81,17 @@ def ping(ssh):
   		data = "OK"
 	print(data)
 	ping_result.append(data)
-	print(ping_result)
+	#print(ping_result)
 
-'''
-def result_kq():
-	print("current:",ssid)
-	result = ping_result
-	print(result)
-	df = DataFrame({"{}".format(ssid):result},index=ssid_list)
+def summary_result():
+	df = DataFrame(index=ssid_list)
+	i = 0
+	for ssid in ssid_list : 
+		df["{}".format(ssid)]= ping_result[i:i+number_of_ssid]
+		i = i + number_of_ssid
 	print(df)
+	df.to_excel('summary_result.xlsx')
 
-
-
-def update_result():
-	#Add column corresponds to the ssid of remote PC
-	df["Remote"] = result
-	print("Summary result : ")
-	print(df)
-	df.to_excel('result.xlsx')
-'''
 if __name__ == '__main__':
 	ssh_to_pc(ssh_1, Host_1, Port_1, User_1, Pass_1)
 	ssh_to_pc(ssh_2, Host_2, Port_2, User_2, Pass_2)
@@ -115,8 +107,7 @@ if __name__ == '__main__':
 				stdin, stdout, stderr = ssh_1.exec_command('netsh interface ip show addresses Wi-Fi | find "IP Address"')
 				sys.exit()
 			ping(ssh_1)
-		#ssh.close()
-
+	summary_result()
 		#ping_result.clear()
 #		print(ping_result)
 		#print(result)
