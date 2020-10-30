@@ -1,0 +1,10 @@
+[
+	{
+		"SSID": "HANDT_SSID1",
+		"Password" : "12345678"
+	},
+	{
+		"SSID": "HANDT_SSID2",
+		"Password": "12345678"
+	}
+]
