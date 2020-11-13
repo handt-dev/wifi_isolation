@@ -1,0 +1,14 @@
+[
+	{
+		"Host" : "10.72.x.x",
+		"Port" : "22",
+		"User" : "user",
+		"Pass" : "password"	
+	},
+	{
+		"Host" : "10.72.x.x",
+		"Port" : "22",
+		"User" : "user",
+		"Pass" : "password"
+	}
+]
